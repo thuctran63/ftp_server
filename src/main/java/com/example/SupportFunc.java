@@ -33,7 +33,7 @@ public class SupportFunc {
     public boolean vertify_user(String username, String password) {
 
         try {
-            String filePath = System.getProperty("user.dir") + "\\" + "server\\security\\user.txt";
+            String filePath = System.getProperty("user.dir") + "\\" + "src\\main\\java\\security\\user.txt";
             System.out.println(filePath);
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
             String line;

@@ -115,12 +115,11 @@ public class ProcessClient implements Runnable {
 
             String filePath = dis.readUTF();
             String fileName = filePath.substring(filePath.lastIndexOf("\\") + 1, filePath.length());
-            SupportFunc.getInstance().createFolder(rootDirServer + "\\" + ipAdress);
 
             // đọc file từ client và ghi vào server
             byte buffer[] = new byte[4096];
             int read = 0;
-            fos = new FileOutputStream(rootDirServer + "\\" + ipAdress + "\\" + fileName);
+            fos = new FileOutputStream(rootDirServer + "\\" + fileName);
 
             while (true) {
                 if (dis.readUTF().equals("SENDED")) {
