@@ -48,9 +48,7 @@ public class ProcessClient implements Runnable {
 
                     System.out.println("Client " + ipAdress + " is receiving file from server");
                     sendFile(clientSocket);
-                } else if (command.equals("SET_CURRENT_FOLDER")) {
-                    setCurrentFolder(clientSocket);
-                    System.out.println("Client " + ipAdress + " set current folder successfully");
+
                 } else if (command.equals("SHOW_LIST_FILE")) {
                     showFile(clientSocket, rootDirServer);
                     System.out.println("Client " + ipAdress + " show list file successfully");
@@ -89,7 +87,8 @@ public class ProcessClient implements Runnable {
 
     private void showFile(Socket clientSocket, String rootFile) {
         try {
-            File folder = new File(rootFile);
+            String folderPath = dis.readUTF();
+            File folder = new File(folderPath);
             File[] listOfFiles = folder.listFiles();
             String listFile = "";
             for (int i = 0; i < listOfFiles.length; i++) {
@@ -101,22 +100,12 @@ public class ProcessClient implements Runnable {
         }
     }
 
-    private void setCurrentFolder(Socket clientSocket) {
-        try {
-            String folderPath = dis.readUTF();
-            rootDirServer = folderPath;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
     private void receiveFile(Socket clientSocket) {
         try {
 
             String filePath = dis.readUTF();
             String fileName = filePath.substring(filePath.lastIndexOf("\\") + 1, filePath.length());
 
-            // đọc file từ client và ghi vào server
             byte buffer[] = new byte[4096];
             int read = 0;
             fos = new FileOutputStream(rootDirServer + "\\" + fileName);
