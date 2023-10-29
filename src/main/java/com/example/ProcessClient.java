@@ -30,11 +30,6 @@ public class ProcessClient implements Runnable {
             String ipAdress = clientSocket.getInetAddress().getHostAddress();
             dis = new DataInputStream(clientSocket.getInputStream());
             dos = new DataOutputStream(clientSocket.getOutputStream());
-
-            if (!authenticate(clientSocket)) {
-                return;
-            }
-
             while (true) {
 
                 System.out.println("Watting command from client " + ipAdress);
@@ -50,7 +45,7 @@ public class ProcessClient implements Runnable {
                     sendFile(clientSocket);
 
                 } else if (command.equals("SHOW_LIST_FILE")) {
-                    showFile(clientSocket, rootDirServer);
+                    showFile(clientSocket);
                     System.out.println("Client " + ipAdress + " show list file successfully");
                 }
             }
@@ -59,33 +54,7 @@ public class ProcessClient implements Runnable {
         }
     }
 
-    private boolean authenticate(Socket clientSocket) {
-        try {
-            int length = dis.readInt();
-            byte[] encryptedData_user = new byte[length];
-            dis.readFully(encryptedData_user);
-            String username = SupportFunc.getInstance().decryptData(encryptedData_user);
-
-
-            length = dis.readInt(); 
-            byte[] encryptedData_pass = new byte[length];
-            dis.readFully(encryptedData_pass);
-            String password = SupportFunc.getInstance().decryptData(encryptedData_pass);
-
-            if (SupportFunc.getInstance().vertify_user(username, password)) {
-                dos.writeUTF("AUTHENTICATE_SUCCESS");
-                return true;
-            } else {
-                dos.writeUTF("AUTHENTICATE_FAIL");
-                return false;
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
-    }
-
-    private void showFile(Socket clientSocket, String rootFile) {
+    private void showFile(Socket clientSocket) {
         try {
             String folderPath = dis.readUTF();
             File folder = new File(folderPath);
