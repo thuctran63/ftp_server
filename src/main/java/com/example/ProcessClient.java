@@ -57,23 +57,36 @@ public class ProcessClient implements Runnable {
     private void showFile(Socket clientSocket) {
         try {
             String folderPath = dis.readUTF();
+            System.out.println("Current folder: " + folderPath);
             File folder = new File(folderPath);
-            File[] listOfFiles = folder.listFiles();
-            String listFile = "";
-            for (int i = 0; i < listOfFiles.length; i++) {
-                listFile += listOfFiles[i].getName() + "\n";
+            File[] listOfFolder = folder.listFiles();
+            String listFiles = "";
+            String listDirectories = "";
+
+            for (int i = 0; i < listOfFolder.length; i++) {
+                if (listOfFolder[i].isFile()) {
+                    listFiles += listOfFolder[i].getName() + "\n";
+                } else if (listOfFolder[i].isDirectory()) {
+                    listDirectories += listOfFolder[i].getName() + "\n";
+                }
             }
-            dos.writeUTF(listFile);
+    
+            dos.writeUTF(listFiles);
+            dos.writeUTF(listDirectories);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
+    
 
     private void receiveFile(Socket clientSocket) {
         try {
 
             String filePath = dis.readUTF();
             String fileName = filePath.substring(filePath.lastIndexOf("\\") + 1, filePath.length());
+            String pathSave = dis.readUTF();
+
+            rootDirServer = pathSave;
 
             byte buffer[] = new byte[4096];
             int read = 0;
@@ -103,11 +116,9 @@ public class ProcessClient implements Runnable {
 
         try {
 
-            String fileName = null;
-
-            fileName = dis.readUTF();
-            System.out.println("Current folder: " + rootDirServer);
-            fis = new FileInputStream(rootDirServer + "\\" + fileName);
+            String filePath = dis.readUTF();
+            System.out.println("File path: " + filePath);
+            fis = new FileInputStream(filePath);
             byte[] buffer = new byte[4096];
             int read = 0;
             if (dis.readUTF().equals("READY_TO_SEND")) {
